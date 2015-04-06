@@ -27,7 +27,7 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
   // SCOPE FUNCTIONS
   $scope.getSelectableRows = function() {
     var tableRowFilter = $filter('mlhrTableRowFilter');
-    return angular.isArray($scope.rows) ? tableRowFilter($scope.rows, $scope.columns, $scope.searchTerms, $scope.filterState) : [];
+    return angular.isArray($scope.rows) ? tableRowFilter($scope.rows, $scope._columns, $scope.searchTerms, $scope.filterState) : [];
   };
 
   $scope.isSelectedAll = function() {
@@ -43,7 +43,7 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
     // Get a list of filtered rows
     var rows = $scope.getSelectableRows();
     if (rows.length <= 0) return;
-    var columns = $scope.columns;
+    var columns = $scope._columns;
     var selectorKey = null;
     // Search for selector key in selector column
     for (var i=0; i< columns.length; i++) {
@@ -97,8 +97,8 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
   };
   // Checks if columns have any filter fileds
   $scope.hasFilterFields = function() {
-    for (var i = $scope.columns.length - 1; i >= 0; i--) {
-      if (typeof $scope.columns[i].filter !== 'undefined') {
+    for (var i = $scope._columns.length - 1; i >= 0; i--) {
+      if (typeof $scope._columns[i].filter !== 'undefined') {
         return true;
       }
     }
@@ -163,8 +163,8 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
     return classes[0];
   };
   $scope.setColumns = function(columns) {
-    $scope.columns = columns;
-    $scope.columns.forEach(function(column) {
+    $scope._columns = _.cloneDeep(columns);
+    $scope._columns.forEach(function(column) {
       // formats
       var format = column.format;
       if (typeof format !== 'function') {
@@ -300,7 +300,7 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
 
   $scope.getActiveColCount = function() {
     var count = 0;
-    $scope.columns.forEach(function(col) {
+    $scope._columns.forEach(function(col) {
       if (!col.disabled) {
         count++;
       }
@@ -321,7 +321,7 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
     });
 
     // serialize columns
-    state.columns = $scope.columns.map(function(col) {
+    state.columns = $scope._columns.map(function(col) {
       return {
         id: col.id,
         disabled: !!col.disabled
@@ -367,10 +367,10 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
       var column_ids = state.columns.map(function(col) {
         return col.id;
       });
-      $scope.columns.sort(function(a,b) {
+      $scope._columns.sort(function(a,b) {
         return column_ids.indexOf(a.id) - column_ids.indexOf(b.id);
       });
-      $scope.columns.forEach(function(col, i) {
+      $scope._columns.forEach(function(col, i) {
         ['disabled'].forEach(function(prop) {
           col[prop] = state.columns[i][prop];
         });
