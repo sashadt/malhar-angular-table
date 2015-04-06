@@ -27,7 +27,7 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
   // SCOPE FUNCTIONS
   $scope.getSelectableRows = function() {
     var tableRowFilter = $filter('mlhrTableRowFilter');
-    return angular.isArray($scope.rows) ? tableRowFilter($scope.rows, $scope.columns, $scope.searchTerms, $scope.filterState) : [];
+    return angular.isArray($scope.rows) ? tableRowFilter($scope.rows, $scope._columns, $scope.searchTerms, $scope.filterState) : [];
   };
 
   $scope.isSelectedAll = function() {
@@ -165,8 +165,8 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
     return classes[0];
   };
   $scope.setColumns = function(columns) {
-    $scope.columns = columns;
-    $scope.columns.forEach(function(column) {
+    $scope._columns = angular.copy(columns);
+    $scope._columns.forEach(function(column) {
       // formats
       var format = column.format;
       if (typeof format !== 'function') {
@@ -302,7 +302,7 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
 
   $scope.getActiveColCount = function() {
     var count = 0;
-    $scope.columns.forEach(function(col) {
+    $scope._columns.forEach(function(col) {
       if (!col.disabled) {
         count++;
       }
@@ -323,7 +323,7 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
     });
 
     // serialize columns
-    state.columns = $scope.columns.map(function(col) {
+    state.columns = $scope._columns.map(function(col) {
       return {
         id: col.id,
         disabled: !!col.disabled
@@ -369,10 +369,10 @@ angular.module('datatorrent.mlhrTable.controllers.MlhrTableController', [
       var column_ids = state.columns.map(function(col) {
         return col.id;
       });
-      $scope.columns.sort(function(a,b) {
+      $scope._columns.sort(function(a,b) {
         return column_ids.indexOf(a.id) - column_ids.indexOf(b.id);
       });
-      $scope.columns.forEach(function(col, i) {
+      $scope._columns.forEach(function(col, i) {
         ['disabled'].forEach(function(prop) {
           col[prop] = state.columns[i][prop];
         });

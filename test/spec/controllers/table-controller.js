@@ -480,30 +480,30 @@ describe('Controller: TableController', function() {
     it('should set the passed columns as $scope.columns', function() {
       var columns = [];
       $scope.setColumns(columns);
-      expect($scope.columns).to.equal(columns);
+      expect($scope._columns).to.deep.equal(columns);
     });
 
-    it('should replace all filter, format, and sort strings on each column with the built-in functions', function() {
+    it('should replace all filter, format, and sort strings on each $scope._columns.column with the built-in functions', function() {
       var col;
       var columns = [
         col = { id: 'k1', key: 'k1', sort: 'test', filter: 'test', format: 'test'}
       ];
       $scope.setColumns(columns);
-      expect(col.sort).to.be.a('function');
-      expect(col.filter).to.equal(mockTableFilterFunctions.test);
-      expect(col.format).to.equal(mockTableFormatFunctions.test);
+      expect($scope._columns[0].sort).to.be.a('function');
+      expect($scope._columns[0].filter).to.equal(mockTableFilterFunctions.test);
+      expect($scope._columns[0].format).to.equal(mockTableFormatFunctions.test);
     });
 
-    it('should delete references to invalid built-in functions and call $log.warn', function() {
+    it('should delete references to invalid built-in functions in $scope._columns and call $log.warn', function() {
       var col;
       var columns = [
         col = { id: 'k1', key: 'k1', sort: 'not_a_real_fn', filter: 'not_a_real_fn', format: 'not_a_real_fn'}
       ];
       $scope.setColumns(columns);
       expect(mockLog.warn).to.have.been.calledThrice;
-      expect(col.sort).to.be.undefined;
-      expect(col.filter).to.be.undefined;
-      expect(col.format).to.be.undefined;
+      expect($scope._columns[0].sort).to.be.undefined;
+      expect($scope._columns[0].filter).to.be.undefined;
+      expect($scope._columns[0].format).to.be.undefined;
     });
 
   });
